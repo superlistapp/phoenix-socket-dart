@@ -6,7 +6,6 @@ import 'package:quiver/collection.dart';
 
 import 'channel.dart';
 import 'events.dart';
-import 'exceptions.dart';
 import 'message.dart';
 
 /// Encapsulates the response to a [Push].
@@ -77,8 +76,7 @@ class Push {
     this.payload,
     this.timeout,
   })  : _channel = channel,
-        _logger = Logger('phoenix_socket.push.${channel.loggerName}'),
-        _responseCompleter = Completer<PushResponse>();
+        _logger = Logger('phoenix_socket.push.${channel.loggerName}');
 
   final Logger _logger;
   final ListMultimap<String, void Function(PushResponse)> _receivers =
@@ -103,17 +101,6 @@ class Push {
   Timer? _timeoutTimer;
   String? _ref;
   PhoenixChannelEvent? _replyEvent;
-
-  Completer<PushResponse> _responseCompleter;
-
-  /// A future that will yield the response to the original message.
-  Future<PushResponse> get future async {
-    final response = await _responseCompleter.future;
-    if (response.isTimeout) {
-      throw ChannelTimeoutException(response);
-    }
-    return response;
-  }
 
   /// Indicates whether the push has been sent.
   bool get sent => _sent;
@@ -162,7 +149,7 @@ class Push {
         err,
         stacktrace,
       );
-      _receiveResponse(err);
+      _onError(err);
     }
   }
 
@@ -192,7 +179,7 @@ class Push {
       _channel
           .onPushReply(replyEvent)
           .then<void>(_receiveResponse)
-          .catchError(_receiveResponse);
+          .catchError(_onError);
       _awaitingReply = true;
     }
 
@@ -224,34 +211,15 @@ class Push {
   /// e.g. 'ok' or 'error'.
   void trigger(PushResponse response) {
     _received = response;
-
-    if (_responseCompleter.isCompleted) {
-      _logger
-        ..warning('Push being completed more than once')
-        ..warning(
-          () => '  event: $replyEvent, status: ${response.status}',
-        )
-        ..finer(
-          () => '  response: ${response.response}',
-        );
-
-      return;
-    } else {
-      _logger.finer(
-        () => 'Completing for $replyEvent with response ${response.response}',
-      );
-      _responseCompleter.complete(response);
-    }
+    final receivers = _receivers[response.status].toList();
 
     _logger.finer(() {
-      if (_receivers[response.status].isNotEmpty) {
-        return 'Triggering ${_receivers[response.status].length} callbacks';
+      if (receivers.isNotEmpty) {
+        return 'Triggering ${receivers.length} callbacks';
       }
       return 'Not triggering any callbacks';
     });
 
-    final receivers = _receivers[response.status].toList();
-    clearReceivers();
     for (final cb in receivers) {
       cb(response);
     }
@@ -265,20 +233,18 @@ class Push {
   // Remove existing waiters and reset completer
   void cleanUp() {
     clearReceivers();
-    _responseCompleter = Completer();
   }
 
-  void _receiveResponse(dynamic response) {
+  void _receiveResponse(Message response) {
     cancelTimeout();
-    if (response is Message) {
-      if (response.event == replyEvent) {
-        trigger(PushResponse.fromMessage(response));
-      }
-    } else if (response is PhoenixException) {
-      if (!_responseCompleter.isCompleted) {
-        _responseCompleter.completeError(response);
-        clearReceivers();
-      }
+    _logger.finer('Push $ref received response $response');
+    if (response.event == replyEvent) {
+      trigger(PushResponse.fromMessage(response));
     }
+  }
+
+  void _onError(dynamic error) {
+    _logger.warning('Push $ref failed', error);
+    trigger(PushResponse(status: 'error', response: error));
   }
 }
