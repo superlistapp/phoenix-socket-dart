@@ -236,7 +236,7 @@ class PhoenixSocket {
         return;
       } else {
         throw PhoenixException();
-      } // else
+      }
     } catch (err, stackTrace) {
       _logger.severe('Raised Exception', err, stackTrace);
       _ws = null;
