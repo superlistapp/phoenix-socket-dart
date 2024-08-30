@@ -19,7 +19,8 @@ final class DelayedCallback<T> {
     _delayTimer = Timer(delay, _delayCompleter.complete);
   }
 
-  final int _id = _random.nextInt(1 << 32);
+  // JS only supports values up to 1 << 31.
+  final int _id = _random.nextInt(1 << 31);
   late final idAsString = _id.toRadixString(16).padLeft(8, '0');
 
   late Timer _delayTimer;
