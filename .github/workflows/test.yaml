@@ -45,4 +45,4 @@ jobs:
           dart analyze test/
 
       - name: Run tests
-        run: dart run test
+        run: dart run test --concurrency=1
