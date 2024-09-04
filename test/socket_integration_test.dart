@@ -3,10 +3,20 @@ import 'dart:async';
 import 'package:phoenix_socket/phoenix_socket.dart';
 import 'package:test/test.dart';
 
+import 'helpers/proxy.dart';
+
 void main() {
   const addr = 'ws://localhost:4001/socket/websocket';
 
   group('PhoenixSocket', () {
+    setUp(() async {
+      await prepareProxy();
+    });
+
+    tearDown(() async {
+      await destroyProxy();
+    });
+
     test('can connect to a running Phoenix server', () async {
       final socket = PhoenixSocket(addr);
 
@@ -120,6 +130,27 @@ void main() {
       await Future.delayed(Duration(seconds: 3));
 
       expect(errCount, 3);
+    });
+
+    test('heartbeat failure does not reconnect after disposal', () async {
+      final socket = PhoenixSocket(
+        addr,
+        socketOptions: PhoenixSocketOptions(
+          heartbeat: Duration(milliseconds: 1),
+        ),
+      );
+
+      await socket.connect();
+
+      await socket.openStream.first;
+
+      // Prevent next heartbeat from getting a reply.
+      await haltProxy();
+
+      socket.dispose();
+
+      await Future.delayed(Duration(milliseconds: 1));
+      // The test will fail with unhandled exception if reconnection attempt is made
     });
   });
 }

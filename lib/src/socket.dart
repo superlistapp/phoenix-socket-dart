@@ -448,7 +448,9 @@ class PhoenixSocket {
       return false;
     } catch (error, stackTrace) {
       _logger.warning('Heartbeat message failed', error, stackTrace);
-      _reconnect(heartbeatTimedOut, reason: 'Heartbeat timed out');
+      if (!_disposed && _connectionManager != null) {
+        _reconnect(heartbeatTimedOut, reason: 'Heartbeat timed out');
+      }
       return false;
     }
   }
@@ -569,7 +571,6 @@ class PhoenixSocket {
     if (_isOpen) {
       _triggerChannelExceptions(PhoenixException(socketError: errorEvent));
     }
-    // _connectionManager?.reconnect(internalServerError, reason: 'Error on socket: ${errorEvent.error}');
   }
 
   void _onSocketClosed(PhoenixSocketCloseEvent closeEvent) {
