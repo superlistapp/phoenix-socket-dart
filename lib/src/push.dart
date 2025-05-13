@@ -69,7 +69,7 @@ class PushResponse {
 }
 
 /// Type of function that should return a push payload
-typedef PayloadGetter = Map<String, dynamic> Function();
+typedef PayloadGetter = dynamic Function();
 
 /// Object produced by [PhoenixChannel.push] to encapsulate
 /// the message sent and its lifecycle.
