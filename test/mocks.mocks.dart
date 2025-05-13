@@ -130,13 +130,6 @@ class _FakeMessageSerializer_8 extends _i1.SmartFake
 /// See the documentation for Mockito's code generation for more information.
 class MockPhoenixChannel extends _i1.Mock implements _i5.PhoenixChannel {
   @override
-  Map<String, dynamic> get parameters => (super.noSuchMethod(
-        Invocation.getter(#parameters),
-        returnValue: <String, dynamic>{},
-        returnValueForMissingStub: <String, dynamic>{},
-      ) as Map<String, dynamic>);
-
-  @override
   _i2.PhoenixSocket get socket => (super.noSuchMethod(
         Invocation.getter(#socket),
         returnValue: _FakePhoenixSocket_0(
@@ -330,7 +323,7 @@ class MockPhoenixChannel extends _i1.Mock implements _i5.PhoenixChannel {
   @override
   _i4.Push push(
     String? eventName,
-    Map<String, dynamic>? payload, [
+    dynamic payload, [
     Duration? newTimeout,
   ]) =>
       (super.noSuchMethod(
@@ -369,7 +362,7 @@ class MockPhoenixChannel extends _i1.Mock implements _i5.PhoenixChannel {
   @override
   _i4.Push pushEvent(
     _i11.PhoenixChannelEvent? event,
-    Map<String, dynamic>? payload, [
+    dynamic payload, [
     Duration? newTimeout,
   ]) =>
       (super.noSuchMethod(
@@ -531,14 +524,14 @@ class MockPhoenixSocket extends _i1.Mock implements _i2.PhoenixSocket {
       ) as _i10.Stream<_i3.Message>);
 
   @override
-  _i10.Future<_i2.PhoenixSocket?> connect() => (super.noSuchMethod(
+  _i10.Future<void> connect() => (super.noSuchMethod(
         Invocation.method(
           #connect,
           [],
         ),
-        returnValue: _i10.Future<_i2.PhoenixSocket?>.value(),
-        returnValueForMissingStub: _i10.Future<_i2.PhoenixSocket?>.value(),
-      ) as _i10.Future<_i2.PhoenixSocket?>);
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
 
   @override
   void close([
@@ -618,7 +611,7 @@ class MockPhoenixSocket extends _i1.Mock implements _i2.PhoenixSocket {
   @override
   _i5.PhoenixChannel addChannel({
     required String? topic,
-    Map<String, dynamic>? parameters,
+    dynamic parameters,
     Duration? timeout,
   }) =>
       (super.noSuchMethod(
@@ -679,13 +672,6 @@ class MockWebSocketChannel extends _i1.Mock implements _i6.WebSocketChannel {
       ) as _i10.Future<void>);
 
   @override
-  _i10.Stream<dynamic> get stream => (super.noSuchMethod(
-        Invocation.getter(#stream),
-        returnValue: _i10.Stream<dynamic>.empty(),
-        returnValueForMissingStub: _i10.Stream<dynamic>.empty(),
-      ) as _i10.Stream<dynamic>);
-
-  @override
   _i6.WebSocketSink get sink => (super.noSuchMethod(
         Invocation.getter(#sink),
         returnValue: _FakeWebSocketSink_6(
@@ -697,6 +683,13 @@ class MockWebSocketChannel extends _i1.Mock implements _i6.WebSocketChannel {
           Invocation.getter(#sink),
         ),
       ) as _i6.WebSocketSink);
+
+  @override
+  _i10.Stream<dynamic> get stream => (super.noSuchMethod(
+        Invocation.getter(#stream),
+        returnValue: _i10.Stream<dynamic>.empty(),
+        returnValueForMissingStub: _i10.Stream<dynamic>.empty(),
+      ) as _i10.Stream<dynamic>);
 
   @override
   void pipe(_i7.StreamChannel<dynamic>? other) => super.noSuchMethod(

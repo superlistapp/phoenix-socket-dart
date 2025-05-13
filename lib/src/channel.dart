@@ -43,7 +43,7 @@ class PhoenixChannel {
   PhoenixChannel.fromSocket(
     this.socket, {
     required this.topic,
-    Map<String, dynamic>? parameters,
+    dynamic parameters,
     Duration? timeout,
   })  : _controller = StreamController.broadcast(),
         _waiters = {},
@@ -57,7 +57,7 @@ class PhoenixChannel {
   }
 
   /// Parameters passed to the backend at join time.
-  final Map<String, dynamic> parameters;
+  final dynamic parameters;
 
   /// The [PhoenixSocket] through which this channel is established.
   final PhoenixSocket socket;
@@ -247,7 +247,7 @@ class PhoenixChannel {
     /// The message payload.
     ///
     /// This needs to be a JSON encodable object.
-    Map<String, dynamic> payload, [
+    dynamic payload, [
     /// Manually set timeout value for this push.
     ///
     /// If not provided, the default timeout will be used.
@@ -265,7 +265,7 @@ class PhoenixChannel {
   /// using [push] instead.
   Push pushEvent(
     PhoenixChannelEvent event,
-    Map<String, dynamic> payload, [
+    dynamic payload, [
     Duration? newTimeout,
   ]) {
     assert(_joinedOnce);

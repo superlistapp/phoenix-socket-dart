@@ -342,7 +342,7 @@ class PhoenixSocket {
     return (_pendingMessages[message.ref!] = Completer<Message>()).future;
   }
 
-  void _addToSink(String data) {
+  void _addToSink(dynamic data) {
     if (_disposed) {
       return;
     }
@@ -360,7 +360,7 @@ class PhoenixSocket {
   /// [parameters] are any options parameters you wish to send
   PhoenixChannel addChannel({
     required String topic,
-    Map<String, dynamic>? parameters,
+    dynamic parameters,
     Duration? timeout,
   }) {
     PhoenixChannel? channel = channels[topic];
